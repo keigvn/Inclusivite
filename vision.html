@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!--
+     - Roxy: Bootstrap template by GettTemplates.com
+     - https://gettemplates.co/roxy
+    -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Testing Ground v2</title>
+    <meta name="description" content="Roxy">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="vendor/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="vendor/select2/select2.min.css">
+    <link rel="stylesheet" href="vendor/owlcarousel/owl.carousel.min.css">
+    <link rel="stylesheet" href="vendor/lightcase/lightcase.css">
+     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400|Work+Sans:300,400,700" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.min.css">
+    <link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+    <!-- Modernizr JS for IE8 support of HTML5 elements and media queries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.js"></script>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.js"></script> -->
+    <meta charset="utf-8">
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+    <!-- Functions for Displaying the Classified Sign of the User -->
+    <script>
+        function ThumbEvent(){
+            document.getElementById("dsply_txt").innerText = "Thumb Finger";
+        }
+
+        function IndexEvent(){
+            document.getElementById("dsply_txt").innerText = "Index Finger";
+        }
+
+        function MiddleEvent(){
+            document.getElementById("dsply_txt").innerText = "Middle Finger";
+        }
+
+        function RingEvent(){
+            document.getElementById("dsply_txt").innerText = "Ring Finger";
+        }
+
+        function PinkyEvent(){
+            document.getElementById("dsply_txt").innerText = "Pinky Finger";
+        }
+
+        function FMajor(){
+            
+            document.getElementById("dsply_txt").innerText = "A";
+            
+
+        }
+
+        
+    </script>
+    <script type="module">
+        const videoElement = document.getElementsByClassName('input_video')[0];
+        const canvasElement = document.getElementsByClassName('output_canvas')[0];
+        const canvasCtx = canvasElement.getContext('2d');
+        
+        function onResults(results) {
+    if(results.multiHandedness.length == 0) {
+        document.getElementById("dsply_txt").innerText = "Sign Your Language";
+    } else {
+        // The Entire Hand Variables 
+        let thumb = results.multiHandWorldLandmarks[0][4]["y"];
+        let index = results.multiHandWorldLandmarks[0][8]["y"];
+        let middle = results.multiHandWorldLandmarks[0][12]["y"];
+        let ring = results.multiHandWorldLandmarks[0][16]["y"];
+        let pinky = results.multiHandWorldLandmarks[0][20]["y"];
+
+        // Right Hand
+        if (results.multiHandedness[0]["label"] == "Right") {
+            if (thumb < index && thumb < middle && thumb < ring && thumb < pinky) {
+                // THUMB RAISED
+                ThumbEvent();
+            } else if (index < thumb && index < middle && index < ring && index < pinky) {
+                // INDEX FINGER RAISED
+                IndexEvent();
+            } else if (middle < thumb && middle < index && middle < ring && middle < pinky) {
+                // MIDDLE FINGER RAISED
+                MiddleEvent();
+            } else if (ring < thumb && ring < index && ring < middle && ring < pinky) {
+                // RING FINGER RAISED
+                RingEvent();
+            } else if (pinky < thumb && pinky < index && pinky < middle && pinky < ring) {
+                // PINKY FINGER RAISED
+                PinkyEvent();
+            }
+
+            // left Hand
+        } else if (results.multiHandedness[0]["label"] == "Left") {
+          if (thumb < index && thumb < middle && thumb < ring && thumb < pinky) {
+                // THUMB RAISED
+                ThumbEvent();
+            } else if (index < thumb && index < middle && index < ring && index < pinky) {
+                // INDEX FINGER RAISED
+                IndexEvent();
+            } else if (middle < thumb && middle < index && middle < ring && middle < pinky) {
+                // MIDDLE FINGER RAISED
+                MiddleEvent();
+            } else if (ring < thumb && ring < index && ring < middle && ring < pinky) {
+                // RING FINGER RAISED
+                RingEvent();
+            } else if (pinky < thumb && pinky < index && pinky < middle && pinky < ring) {
+                // PINKY FINGER RAISED
+                PinkyEvent();
+            }
+        }
+    }
+
+    // Evaluates if the Hand is left(FMajor) or Right(thumb, index, middle, ring, pinky.) event OpenHand()            
+    canvasCtx.save();
+    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+    canvasCtx.drawImage(
+        results.image, 0, 0, canvasElement.width, canvasElement.height);
+    //    declare the keypoints for the detected hands                             
+    if (results.multiHandLandmarks) {
+        for (const landmarks of results.multiHandLandmarks) {
+            drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS,
+                            {color: '#FF00FF', lineWidth: 5});
+            drawLandmarks(canvasCtx, landmarks, {color: '#0000FF', lineWidth: 2});
+        }
+    }
+    //    draws keypoints of the detected hands or hand on the video or canvas
+    canvasCtx.restore();
+}
+
+        
+
+        // Instance of hand mediepipe Model 
+        const hands = new Hands({locateFile: (file) => {
+            // library needed for hand detection
+          return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+        }});
+
+        // Settings for the hand Model
+        hands.setOptions({
+        //   Quantity of the hand that will be detected
+          maxNumHands: 2,
+        //   Effectes the performance of the model
+          modelComplexity: 1,
+        // Passing score of the confidence score of the prediction to be clasified as a hand
+          minDetectionConfidence: 0.5,
+        // Minimum of the score needed for the model to actually keeping tracking hand of the user
+          minTrackingConfidence: 0.5
+        });
+        // This is a CallBack function, essentially for returning a response on handaling, Results(onResults) of the detected hand
+        hands.onResults(onResults);
+        
+        // Setting Options placed on the Camera... if you need to change something about the Camera
+        const camera = new Camera(videoElement, {
+          onFrame: async () => {
+            // This sends a Request to the model(hands) for classifying the hand... the videoElement is the input of the camera 
+            await hands.send({image: videoElement});
+          },
+          width: 1280,
+          height: 720
+        });
+        camera.start();
+        </script>
+</head>
+<body data-spy="scroll" data-target="#navbar" class="static-layout">
+    <nav id="header-navbar" class="navbar navbar-expand-lg py-4">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center text-white" href="/">
+            <h3 class="font-weight-bolder mb-0">My Version</h3>
+        </a>
+    </div>
+</nav>
+
+</div>  <div class="jumbotron d-flex align-items-center">
+  <div class="container text-center">
+    <h1 class="display-1 mb-4">Testing<br>Ground</h1>
+  </div>
+  <div class="rectangle-1"></div>
+  <div class="rectangle-2"></div>
+  <div class="rectangle-transparent-1"></div>
+  <div class="rectangle-transparent-2"></div>
+  <div class="circle-1"></div>
+  <div class="circle-2"></div>
+  <div class="circle-3"></div>
+  <div class="triangle triangle-1">
+    <img src="img/obj_triangle.png" alt="">
+  </div>
+  <div class="triangle triangle-2">
+    <img src="img/obj_triangle.png" alt="">
+  </div>
+  <div class="triangle triangle-3">
+    <img src="img/obj_triangle.png" alt="">
+  </div>
+  <div class="triangle triangle-4">
+    <img src="img/obj_triangle.png" alt="">
+  </div>
+</div>  
+
+<section id="section-featurettes" class="featurettes overlay bg-fixed" style="background-image: url(img/bg.jpg);">
+
+    <div class="container">
+        <div class="container" style=text-align:center>
+            <br>
+            <br>
+            <h1 id="dsply_txt" class="display-1 mb-4">Hello adventurer</h1>
+            <video class="input_video" hidden></video>
+            <canvas class="output_canvas" width="854px" height="480px"></canvas>
+            <br>
+            <br>
+            </div>
+    </div><!--/ .container -->
+
+</footer>   <!-- External JS -->
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
+    <script src="vendor/bootstrap/popper.min.js"></script>
+    <script src="vendor/bootstrap/bootstrap.min.js"></script>
+    <script src="vendor/select2/select2.min.js "></script>
+    <script src="vendor/owlcarousel/owl.carousel.min.js"></script>
+    <script src="vendor/stellar/jquery.stellar.js" type="text/javascript" charset="utf-8"></script>
+    <script src="vendor/isotope/isotope.min.js"></script>
+    <script src="vendor/lightcase/lightcase.js"></script>
+    <script src="vendor/waypoints/waypoint.min.js"></script>
+     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+     
+    <!-- Main JS -->
+    <script src="js/app.min.js "></script>
+    <script src="//localhost:35729/livereload.js"></script>
+</body>
+</html>
